@@ -141,7 +141,7 @@ class _SplashScreenState extends State<SplashScreen>
           // 1. Deep Navy Gradient Background
           Container(
             decoration: const BoxDecoration(
-              color: Color(0xFFF7F7F7),
+              color: Colors.white,
             ),
           ),
 
@@ -244,23 +244,23 @@ class _SplashScreenState extends State<SplashScreen>
                         // ),
                         Image.asset(
                           AppConfig.appLogoPath,
-                          width: 140,
-                          height: 140,
+                          width: 180,
+                          height: 180,
                           fit: BoxFit.contain,
                         ),
-                        const SizedBox(height: 30),
+                        // const SizedBox(height: 30),
                         // Typography
-                        const Text(
-                          AppConfig.appName,
-                          style: TextStyle(
-                            fontFamily:
-                                'Inter', // Fallback to default if not available
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 4.0, // Increased spacing
-                            color: Colors.white,
-                          ),
-                        ),
+                        // const Text(
+                        //   AppConfig.appName,
+                        //   style: TextStyle(
+                        //     fontFamily:
+                        //         'Inter', // Fallback to default if not available
+                        //     fontSize: 22,
+                        //     fontWeight: FontWeight.bold,
+                        //     letterSpacing: 4.0, // Increased spacing
+                        //     color: Colors.white,
+                        //   ),
+                        // ),
                       ],
                     ),
                   ),

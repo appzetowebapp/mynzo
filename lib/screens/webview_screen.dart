@@ -65,9 +65,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
       },
     );
 
-    _checkConnectivity();
+    //_checkConnectivity();
     _initializeNotifications();
-    _listenToConnectivityChanges();
+   // _listenToConnectivityChanges();
   }
 
   @override
@@ -652,7 +652,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
             var isLogin = urlString.includes('/auth/login') || 
                           urlString.includes('/users/login') ||
                           urlString.includes('/auth/signup-verify') ||
-                          urlString.includes('/v1/food/auth/user/verify-otp');
+                          urlString.includes('/auth/verify-otp');
             
             // Call original fetch
             try {
@@ -695,7 +695,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
             if (url && (url.includes('/auth/login') || 
                         url.includes('/users/login') ||
                         url.includes('/auth/signup-verify') ||
-                        url.includes('/v1/food/auth/user/verify-otp'))) {
+                        url.includes('/auth/verify-otp'))) {
                this.addEventListener('load', function() {
                   try {
                     var responseBody = self.responseText;
@@ -746,7 +746,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
                 // 1. structure: { "accessToken": "...", "user": { "phone": "..." } }
                 // 2. structure: { "token": "...", "data": { "user": { "phoneNumber": "..." } } }
 
-                String? accessToken = body['accessToken']?.toString();
+                String? accessToken = body['token']?.toString();
                 if (accessToken == null && body['token'] != null) {
                   accessToken = body['token'].toString();
                 }
@@ -754,7 +754,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
                 if (accessToken == null &&
                     body['data'] != null &&
                     body['data'] is Map) {
-                  accessToken = body['data']['accessToken']?.toString();
+                  accessToken = body['data']['token']?.toString();
                 }
 
                 if (accessToken != null && accessToken.isNotEmpty) {
@@ -1283,6 +1283,15 @@ class _WebViewScreenState extends State<WebViewScreen> {
                         useOnLoadResource: true,
                         useShouldOverrideUrlLoading: true,
                       ),
+
+                        onReceivedError: (controller, request, error){
+                        debugPrint(request.toString());
+                        if(request.isForMainFrame == true || request.url.toString().endsWith('.js')){
+                          setState(() {
+                          _isOnline = false;
+                        });
+                        }
+                      },
                       onCreateWindow: (controller, createWindowRequest) async {
                         final urlRequest = createWindowRequest.request;
                         var url = urlRequest.url;

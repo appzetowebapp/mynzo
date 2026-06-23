@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 /// All settings are documented inline for easy customization.
 class AppConfig {
   // ==================== APP IDENTITY ====================
-  static const String appName = 'truliq';
+  static const String appName = 'Mynzo world';
   static const String appLogoPath = 'assets/images/logo.png';
 
   // ==================== COLORS & THEME ====================
@@ -32,8 +32,9 @@ class AppConfig {
   static const Color exitDialogBackgroundDark = Color(0xFF1E1E1E); // Dark Gray
   static const Color exitDialogTitleColorDark = Color(0xFFFFFFFF); // White
   static const Color exitDialogTextColorDark = Color(0xFFB3B3B3); // Light Gray
-  static const Color exitDialogCancelColorDark =
-      Color(0xFFB3B3B3); // Light Gray
+  static const Color exitDialogCancelColorDark = Color(
+    0xFFB3B3B3,
+  ); // Light Gray
 
   // Exit Dialog - Common
   static const Color exitDialogButtonColor = primaryColor; // Exit button color
@@ -56,7 +57,7 @@ class AppConfig {
 
   // ==================== WEB URL CONFIGURATION ====================
   // ⚠️ CHANGE THIS URL TO YOUR WEB APPLICATION ⚠️
-  static const String webUrl = 'https://www.truliq.com/user/login';
+  static const String webUrl = 'https://mynzoworld.com/';
 
   static const String notificationIcon =
       '@mipmap/ic_launcher'; // Default app launcher icon
@@ -77,18 +78,18 @@ class AppConfig {
 
   // ==================== API CONFIGURATION ====================
   // Base URL for API endpoints (update this with your actual API base URL)
-  static const String apiBaseUrl = 'https://api.truliq.com/api';
+  static const String apiBaseUrl = 'https://mynzoworld.com/api';
   static const String fcmTokenUrl =
-      'https://api.truliq.com/api/users/fcm-tokens/save';
-//https://api.Mobasket.com/api/notification/user/token
+      'https://mynzoworld.com/api/auth/fcm-token';
+  //https://api.Mobasket.com/api/notification/user/token
   // ==================== SPLASH SCREEN ====================
   static const int splashDurationSeconds = 2;
 
   // ==================== ONBOARDING ====================
   static const List<OnboardingPage> onboardingPages = [
     OnboardingPage(
-      title: 'Welcome to Mobasket',
-      description: 'Experience seamless delivery with the Mobasket app.',
+      title: 'Welcome to Mynzo',
+      description: 'Experience seamless delivery with the Mynzo app.',
       imagePath: 'assets/onboarding/onboarding1.png',
     ),
     OnboardingPage(

@@ -1,4 +1,4 @@
-package com.truliq.user
+package com.mynzo.user
 
 import android.Manifest
 import android.content.pm.PackageManager

@@ -1,41 +1,21 @@
 {
   "project_info": {
-    "project_number": "268401383377",
-    "firebase_url": "https://truliq-default-rtdb.asia-southeast1.firebasedatabase.app",
-    "project_id": "truliq",
-    "storage_bucket": "truliq.firebasestorage.app"
+    "project_number": "483350764702",
+    "project_id": "mynzo-814fe",
+    "storage_bucket": "mynzo-814fe.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:268401383377:android:c174228af0b24916f332f0",
+        "mobilesdk_app_id": "1:483350764702:android:c00ed3ac0f845975012f8f",
         "android_client_info": {
-          "package_name": "com.truliq.user"
+          "package_name": "com.mynzo.user"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCiNWumvvfnvshvfyajxSDpYslgbqn1XPI"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": []
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:268401383377:android:222dd014bd444b19f332f0",
-        "android_client_info": {
-          "package_name": "com.truliq.worker"
-        }
-      },
-      "oauth_client": [],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCiNWumvvfnvshvfyajxSDpYslgbqn1XPI"
+          "current_key": "AIzaSyCb7SwVX3dn9rkoMiIdMRWMUZ8xiFnxt-o"
         }
       ],
       "services": {
