@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 
@@ -21,6 +22,7 @@ import 'package:webview_master_app/utils/prefs_util.dart';
 import 'package:webview_master_app/utils/status_bar_util.dart';
 import 'package:webview_master_app/widgets/exit_dialog.dart';
 import 'package:webview_master_app/widgets/offline_screen.dart';
+import 'package:webview_master_app/screens/splash_screen.dart';
 
 /// WebView Screen - Main screen that loads the configured web URL
 class WebViewScreen extends StatefulWidget {
@@ -35,6 +37,10 @@ class _WebViewScreenState extends State<WebViewScreen> {
   bool _isLoading = true;
   double _loadingProgress = 0.0;
   bool _shareInProgress = false;
+
+  bool _isInitialLoad = true;
+  bool _minSplashDurationMet = false;
+  bool _webViewReady = false;
 
   bool _isOnline = true;
   bool _phoneListenerInjected = false;
@@ -68,6 +74,38 @@ class _WebViewScreenState extends State<WebViewScreen> {
     //_checkConnectivity();
     _initializeNotifications();
    // _listenToConnectivityChanges();
+   _startSplashTimer();
+  }
+
+  Future<void> _startSplashTimer() async {
+    await Future.delayed(
+      const Duration(seconds: AppConfig.splashDurationSeconds + 1),
+    );
+    if (!mounted) return;
+    
+    // Request permissions early for better UX
+    await _requestInitialPermissions();
+    
+    setState(() {
+      _minSplashDurationMet = true;
+    });
+    _checkInitialLoadComplete();
+  }
+
+  Future<void> _requestInitialPermissions() async {
+    try {
+      await PermissionHandlerUtil.requestAllPermissions();
+    } catch (e) {
+      debugPrint('Initial permission request: $e');
+    }
+  }
+
+  void _checkInitialLoadComplete() {
+    if (_minSplashDurationMet && _webViewReady) {
+      setState(() {
+        _isInitialLoad = false;
+      });
+    }
   }
 
   @override
@@ -180,6 +218,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
       _shareInProgress = true;
 
       final data = _normalizeSharePayload(payload);
+      debugPrint('🚀 Executing Native Share with normalized data: $data');
       final title = data['title']!;
       final text = data['text']!;
       final url = data['url']!;
@@ -1259,6 +1298,66 @@ class _WebViewScreenState extends State<WebViewScreen> {
                       initialUrlRequest: URLRequest(
                         url: WebUri(AppConfig.webUrl),
                       ),
+                      initialUserScripts: UnmodifiableListView<UserScript>([
+                        UserScript(
+                          source: r"""
+                            (function() {
+                              if (window.__shareInterceptorInstalled) return;
+                              window.__shareInterceptorInstalled = true;
+
+                              document.addEventListener('click', function(e) {
+                                var target = e.target.closest('button, a, div');
+                                if (target) {
+                                   var text = target.innerText ? target.innerText.toLowerCase() : '';
+                                   var id = target.id ? target.id.toLowerCase() : '';
+                                   var cls = target.className ? (typeof target.className === 'string' ? target.className.toLowerCase() : '') : '';
+                                   if (text.includes('share') || id.includes('share') || cls.includes('share')) {
+                                      console.log('Share button clicked: ' + text + ' | ' + id + ' | ' + cls);
+                                      // Native fallback if navigator.share fails or isn't called
+                                      setTimeout(function() {
+                                          var shareData = {
+                                              title: document.title,
+                                              url: window.location.href
+                                          };
+                                          console.log('Using native fallback share on click');
+                                          if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
+                                              window.flutter_inappwebview.callHandler('nativeShare', JSON.stringify(shareData));
+                                          }
+                                      }, 500);
+                                   }
+                                }
+                              }, true);
+
+                              var originalShare = navigator.share;
+                              console.log('Web Share API intercepted. Original exists: ' + !!originalShare);
+
+                              navigator.share = function(data) {
+                                console.log('navigator.share called with data:', JSON.stringify(data));
+                                return new Promise((resolve, reject) => {
+                                  try {
+                                    if (window.flutter_inappwebview && window.flutter_inappwebview.callHandler) {
+                                      console.log('Calling nativeShare handler in flutter_inappwebview');
+                                      window.flutter_inappwebview.callHandler('nativeShare', JSON.stringify(data));
+                                      resolve();
+                                    } else if (window.webkit && window.webkit.messageHandlers && window.webkit.messageHandlers.nativeShare && window.webkit.messageHandlers.nativeShare.postMessage) {
+                                      console.log('Calling nativeShare handler in webkit');
+                                      window.webkit.messageHandlers.nativeShare.postMessage(JSON.stringify(data));
+                                      resolve();
+                                    } else {
+                                      console.error('Flutter Share handler not found');
+                                      reject(new Error('Flutter Share handler not found'));
+                                    }
+                                  } catch (e) {
+                                    console.error('Share error:', e);
+                                    reject(e);
+                                  }
+                                });
+                              };
+                            })();
+                          """,
+                          injectionTime: UserScriptInjectionTime.AT_DOCUMENT_START,
+                        ),
+                      ]),
                       pullToRefreshController: _pullToRefreshController,
                       initialSettings: InAppWebViewSettings(
                         userAgent:
@@ -1647,6 +1746,10 @@ class _WebViewScreenState extends State<WebViewScreen> {
                           _isLoading = false;
                           _pullToRefreshController.endRefreshing();
                           _loadingProgress = 1.0;
+                          if (!_webViewReady) {
+                            _webViewReady = true;
+                            _checkInitialLoadComplete();
+                          }
                         });
                         debugPrint('✅ Loading finished: $url');
                         await _injectPhoneCaptureScript(controller);
@@ -1995,8 +2098,17 @@ class _WebViewScreenState extends State<WebViewScreen> {
                         }
                       },
                     ),
-                    // Loading indicator overlay - only show when loading
-                    if (_isLoading)
+                    // Initial Splash Screen overlay with smooth transition
+                    Positioned.fill(
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 500),
+                        child: _isInitialLoad
+                            ? const SplashScreen(key: ValueKey('splash'))
+                            : const SizedBox.shrink(key: ValueKey('empty')),
+                      ),
+                    ),
+                    // Loading indicator overlay - only show when loading and NOT initial load
+                    if (_isLoading && !_isInitialLoad)
                       Container(
                         color: Colors.white.withOpacity(0.9),
                         child: Center(

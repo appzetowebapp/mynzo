@@ -21,7 +21,7 @@ class AppConfig {
   static const Color secondaryColor = Color(0xFFB3B3B3); // Purple
   static const Color accentColor = Color(0xFFB3B3B3); // Pink
 
-  // ==================== DIALOG COLORS ====================
+  // ==================== DIALOG COLORS ==================== 
   // Exit Dialog - Light Theme
   static const Color exitDialogBackgroundLight = Color(0xFFFFFFFF); // White
   static const Color exitDialogTitleColorLight = Color(0xFF000000); // Black

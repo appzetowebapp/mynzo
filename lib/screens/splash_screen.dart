@@ -31,7 +31,6 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
     _setupAnimations();
-    _navigateAfterDelay();
   }
 
   void _setupAnimations() {
@@ -80,40 +79,6 @@ class _SplashScreenState extends State<SplashScreen>
     });
   }
 
-  Future<void> _navigateAfterDelay() async {
-    // Total duration slightly longer than animation to enjoy the view
-    await Future.delayed(
-      const Duration(seconds: AppConfig.splashDurationSeconds + 1),
-    );
-
-    if (!mounted) return;
-
-    // Request permissions early for better UX
-    await _requestInitialPermissions();
-
-    // Navigate directly to WebViewScreen
-    Navigator.of(context).pushReplacement(
-      PageRouteBuilder(
-        pageBuilder: (context, animation, secondaryAnimation) =>
-            const WebViewScreen(),
-        transitionsBuilder: (context, animation, secondaryAnimation, child) {
-          return FadeTransition(opacity: animation, child: child);
-        },
-        transitionDuration: const Duration(milliseconds: 800),
-      ),
-    );
-  }
-
-  /// Request initial permissions during splash
-  Future<void> _requestInitialPermissions() async {
-    if (!mounted) return;
-    try {
-      await PermissionHandlerUtil.requestAllPermissions();
-    } catch (e) {
-      debugPrint('Initial permission request: $e');
-    }
-  }
-
   @override
   void dispose() {
     _entranceController.dispose();
@@ -141,7 +106,7 @@ class _SplashScreenState extends State<SplashScreen>
           // 1. Deep Navy Gradient Background
           Container(
             decoration: const BoxDecoration(
-              color: Colors.white,
+            color: Color(0xFFFC2D01),
             ),
           ),
 
