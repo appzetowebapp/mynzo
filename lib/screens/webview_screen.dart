@@ -1691,6 +1691,44 @@ class _WebViewScreenState extends State<WebViewScreen> {
                           },
                         );
 
+                        // Add JavaScript handler to open gallery with on-demand permissions
+                        controller.addJavaScriptHandler(
+                          handlerName: 'openGallery',
+                          callback: (args) async {
+                            // Request photo library permission on-demand
+                            final status = await Permission.photos.request();
+                            
+                            // Allow access if fully granted OR limited access is granted
+                            if (status.isGranted || status.isLimited) {
+                              final ImagePicker picker = ImagePicker();
+                              try {
+                                final XFile? image = await picker.pickImage(
+                                  source: ImageSource.gallery,
+                                  imageQuality: 80,
+                                );
+
+                                if (image != null) {
+                                  final bytes = await image.readAsBytes();
+                                  final base64String = base64Encode(bytes);
+
+                                  return {
+                                    'success': true,
+                                    'base64': base64String,
+                                    'mimeType': 'image/jpeg',
+                                    'fileName': image.name,
+                                  };
+                                }
+                              } catch (e) {
+                                debugPrint('❌ Error in openGallery handler: $e');
+                              }
+                            } else {
+                              debugPrint('❌ Gallery permission denied');
+                            }
+
+                            return {'success': false};
+                          },
+                        );
+
                         // Add JavaScript handler to receive phone number from website
                         controller.addJavaScriptHandler(
                           handlerName: 'savePhoneNumber',
@@ -1803,6 +1841,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
                         if (resources
                             .contains(PermissionResourceType.MICROPHONE)) {
                           final status = await Permission.microphone.request();
+                          // Also request speech recognition for voice search on iOS
+                          await Permission.speech.request();
+                          
                           if (!status.isGranted) {
                             return PermissionResponse(
                               resources: resources,

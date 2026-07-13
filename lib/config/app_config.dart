@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 /// All settings are documented inline for easy customization.
 class AppConfig {
   // ==================== APP IDENTITY ====================
-  static const String appName = 'Mynzo world';
+  static const String appName = 'Mynzo World';
   static const String appLogoPath = 'assets/images/logo.png';
 
   // ==================== COLORS & THEME ====================
@@ -21,7 +21,7 @@ class AppConfig {
   static const Color secondaryColor = Color(0xFFB3B3B3); // Purple
   static const Color accentColor = Color(0xFFB3B3B3); // Pink
 
-  // ==================== DIALOG COLORS ==================== 
+  // ==================== DIALOG COLORS ====================
   // Exit Dialog - Light Theme
   static const Color exitDialogBackgroundLight = Color(0xFFFFFFFF); // White
   static const Color exitDialogTitleColorLight = Color(0xFF000000); // Black
@@ -79,8 +79,7 @@ class AppConfig {
   // ==================== API CONFIGURATION ====================
   // Base URL for API endpoints (update this with your actual API base URL)
   static const String apiBaseUrl = 'https://mynzoworld.com/api';
-  static const String fcmTokenUrl =
-      'https://mynzoworld.com/api/auth/fcm-token';
+  static const String fcmTokenUrl = 'https://mynzoworld.com/api/auth/fcm-token';
   //https://api.Mobasket.com/api/notification/user/token
   // ==================== SPLASH SCREEN ====================
   static const int splashDurationSeconds = 2;

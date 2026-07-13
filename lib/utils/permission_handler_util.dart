@@ -10,8 +10,8 @@ class PermissionHandlerUtil {
       Map<Permission, PermissionStatus> statuses = await [
         Permission.camera,
         Permission.microphone,
+        Permission.speech,
         Permission.location,
-        Permission.photos,
         Permission.notification,
         Permission.storage,
       ].request();
@@ -51,6 +51,11 @@ class PermissionHandlerUtil {
   /// Check microphone permission
   static Future<bool> checkMicrophonePermission() async {
     return await isPermissionGranted(Permission.microphone);
+  }
+
+  /// Check speech recognition permission
+  static Future<bool> checkSpeechPermission() async {
+    return await isPermissionGranted(Permission.speech);
   }
 
   /// Check location permission
@@ -129,8 +134,8 @@ class PermissionHandlerUtil {
     final permissions = {
       Permission.camera: 'Camera',
       Permission.microphone: 'Microphone',
+      Permission.speech: 'Speech Recognition',
       Permission.location: 'Location',
-      Permission.photos: 'Photos',
       Permission.notification: 'Notification',
       Permission.storage: 'Storage',
     };

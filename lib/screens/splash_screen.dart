@@ -106,7 +106,7 @@ class _SplashScreenState extends State<SplashScreen>
           // 1. Deep Navy Gradient Background
           Container(
             decoration: const BoxDecoration(
-            color: Color(0xFFFC2D01),
+           color: const Color(0xFFFC2D01),
             ),
           ),
 
