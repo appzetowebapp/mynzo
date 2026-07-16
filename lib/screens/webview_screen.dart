@@ -1360,8 +1360,9 @@ class _WebViewScreenState extends State<WebViewScreen> {
                       ]),
                       pullToRefreshController: _pullToRefreshController,
                       initialSettings: InAppWebViewSettings(
-                        userAgent:
-                            'Mozilla/5.0 (Linux; Android 13; Pixel 7 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36',
+                        userAgent: Platform.isIOS
+                            ? 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Mobile/15E148 Safari/604.1'
+                            : 'Mozilla/5.0 (Linux; Android 13; Pixel 7 Pro) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36',
                         javaScriptEnabled: true,
                         javaScriptCanOpenWindowsAutomatically: false,
                         domStorageEnabled: true,
@@ -1824,34 +1825,57 @@ class _WebViewScreenState extends State<WebViewScreen> {
                             origin: origin, allow: true, retain: true);
                       },
                       onPermissionRequest: (controller, request) async {
-                        debugPrint(
-                            '🔒 Permission requested: ${request.resources}');
+                        debugPrint('🔒 Permission requested by WebView: ${request.resources}');
 
                         final resources = request.resources;
+                        bool allGranted = true;
+
                         if (resources.contains(PermissionResourceType.CAMERA)) {
-                          final status = await Permission.camera.request();
+                          var status = await Permission.camera.status;
                           if (!status.isGranted) {
-                            return PermissionResponse(
-                              resources: resources,
-                              action: PermissionResponseAction.DENY,
-                            );
+                            debugPrint('📷 Requesting camera permission from OS...');
+                            status = await Permission.camera.request();
+                          }
+                          if (!status.isGranted) {
+                            debugPrint('❌ Camera permission denied by user');
+                            allGranted = false;
                           }
                         }
 
-                        if (resources
-                            .contains(PermissionResourceType.MICROPHONE)) {
-                          final status = await Permission.microphone.request();
-                          // Also request speech recognition for voice search on iOS
-                          await Permission.speech.request();
+                        if (resources.contains(PermissionResourceType.MICROPHONE)) {
+                          var micStatus = await Permission.microphone.status;
+                          if (!micStatus.isGranted) {
+                            debugPrint('🎙️ Requesting microphone permission from OS...');
+                            micStatus = await Permission.microphone.request();
+                          }
                           
-                          if (!status.isGranted) {
-                            return PermissionResponse(
-                              resources: resources,
-                              action: PermissionResponseAction.DENY,
-                            );
+                          if (Platform.isIOS) {
+                            var speechStatus = await Permission.speech.status;
+                            if (!speechStatus.isGranted) {
+                              debugPrint('🗣️ Requesting speech permission from OS...');
+                              speechStatus = await Permission.speech.request();
+                            }
+                            if (!speechStatus.isGranted) {
+                              debugPrint('❌ Speech permission denied by user');
+                              allGranted = false;
+                            }
+                          }
+
+                          if (!micStatus.isGranted) {
+                            debugPrint('❌ Microphone permission denied by user');
+                            allGranted = false;
                           }
                         }
 
+                        if (!allGranted) {
+                          debugPrint('🚫 Denying permission request to WebView');
+                          return PermissionResponse(
+                            resources: resources,
+                            action: PermissionResponseAction.DENY,
+                          );
+                        }
+
+                        debugPrint('✅ All required permissions granted. Approving for WebView.');
                         return PermissionResponse(
                           resources: resources,
                           action: PermissionResponseAction.GRANT,
