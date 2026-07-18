@@ -68,11 +68,11 @@
 	<key>NSCameraUsageDescription</key>
 	<string>Mynzo World requires camera access to capture delivery verification photos, scan order barcodes, and upload profile pictures.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>This app needs location access to provide location-based services.</string>
+	<string>Mynzo World requires location access to find nearby stores, autofill your delivery address, and track active deliveries. For example, your location will be used to show products available in your area and estimate the delivery time for your order.</string>
 	<key>NSLocationAlwaysUsageDescription</key>
-	<string>This app needs location access to provide location-based services.</string>
+	<string>Mynzo World requires location access to find nearby stores, autofill your delivery address, and track active deliveries. For example, your location will be used to show products available in your area and estimate the delivery time for your order.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>This app needs location access to provide location-based services.</string>
+	<string>Mynzo World requires location access to find nearby stores, autofill your delivery address, and track active deliveries. For example, your location will be used to show products available in your area and estimate the delivery time for your order.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Mynzo World requires microphone access to record voice messages and communicate with customer support and clients.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
